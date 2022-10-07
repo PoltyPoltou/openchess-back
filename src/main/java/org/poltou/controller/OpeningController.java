@@ -2,11 +2,11 @@ package org.poltou.controller;
 
 import java.util.List;
 
+import org.poltou.business.opening.theory.TheoryNode;
+import org.poltou.business.opening.theory.TheoryOpening;
 import org.poltou.controller.datainterface.ChessNodeDataInterface;
 import org.poltou.controller.datainterface.OpeningDataInterface;
 import org.poltou.exceptions.BadIdException;
-import org.poltou.opening.ChessNode;
-import org.poltou.opening.Opening;
 import org.poltou.service.OpeningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,17 +22,17 @@ public class OpeningController {
     private OpeningService openingService;
 
     @GetMapping("/opening")
-    public List<Opening> getAllOpening() {
+    public List<TheoryOpening> getAllOpening() {
         return openingService.getAllOpenings();
     }
 
     @GetMapping("/opening/{id}")
-    public Opening getOpeningById(@PathVariable Long id) {
+    public TheoryOpening getOpeningById(@PathVariable Long id) {
         return openingService.findOpeningById(id).orElseThrow(() -> new BadIdException(id.toString()));
     }
 
     @GetMapping("/chessnode/{id}")
-    public ChessNode getNodeById(@PathVariable Long id) {
+    public TheoryNode getNodeById(@PathVariable Long id) {
         return openingService.findNodeById(id).orElseThrow(() -> new BadIdException(id.toString()));
     }
 

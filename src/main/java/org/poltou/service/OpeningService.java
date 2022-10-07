@@ -5,11 +5,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.poltou.business.opening.theory.TheoryNode;
+import org.poltou.business.opening.theory.TheoryOpening;
+import org.poltou.business.repository.TheoryNodeRepo;
+import org.poltou.business.repository.TheoryOpeningRepo;
 import org.poltou.exceptions.BadIdException;
-import org.poltou.opening.ChessNode;
-import org.poltou.opening.Opening;
-import org.poltou.repository.NodeRepo;
-import org.poltou.repository.OpeningRepo;
+import org.poltou.service.data.TheoryNodeDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,28 +20,29 @@ import chess.format.Forsyth;
 @Service
 public class OpeningService {
     @Autowired
-    private OpeningRepo openingRepo;
+    private TheoryOpeningRepo openingRepo;
     @Autowired
-    private NodeRepo chessNodeRepo;
+    private TheoryNodeRepo chessNodeRepo;
+    @Autowired
+    private TheoryNodeDataService theoryNodeDataService;
 
-    public List<Opening> getAllOpenings() {
+    public List<TheoryOpening> getAllOpenings() {
         return StreamSupport.stream(openingRepo.findAll().spliterator(), false).collect(Collectors.toList());
     }
 
-    public Optional<Opening> findOpeningById(Long id) {
+    public Optional<TheoryOpening> findOpeningById(Long id) {
         return openingRepo.findById(id);
+    }
+
+    public Optional<TheoryNode> findNodeById(Long id) {
+        return chessNodeRepo.findById(id);
     }
 
     public Long addOpening(String name, String startingFen) {
         Situation situation = Forsyth.$less$less(startingFen).getOrElse(null);
         if (situation != null) {
-            ChessNode node = new ChessNode();
-            node.setSituation(situation);
-            chessNodeRepo.save(node);
-
-            Opening opening = new Opening();
-            opening.setName(name);
-            opening.setStartingNode(node);
+            TheoryNode node = theoryNodeDataService.createNode(situation);
+            TheoryOpening opening = TheoryOpening.of(name, node);
             return openingRepo.save(opening).getId();
         } else {
             throw new IllegalArgumentException("Fen provided is not parsable");
@@ -48,11 +50,9 @@ public class OpeningService {
     }
 
     public Long addNodeToOpening(Long nodeId, String uci) {
-        ChessNode parent = chessNodeRepo.findById(nodeId)
+        TheoryNode parent = chessNodeRepo.findById(nodeId)
                 .orElseThrow(() -> new BadIdException("ChessNode " + nodeId + " not found."));
-        ChessNode childNode = chessNodeRepo.buildChildNode(parent, uci);
-        parent.getChildren().add(childNode);
-        childNode.setParent(parent);
+        TheoryNode childNode = theoryNodeDataService.getOrCreateChildNode(parent, uci);
         return chessNodeRepo.save(childNode).getId();
     }
 
@@ -65,11 +65,11 @@ public class OpeningService {
     }
 
     public void deleteChessNode(Long id) {
-        Optional<ChessNode> optNode = chessNodeRepo.findById(id);
+        Optional<TheoryNode> optNode = chessNodeRepo.findById(id);
         if (optNode.isPresent()) {
             if (optNode.get().getParent() != null) {
 
-                optNode.get().getParent().getChildren().remove(optNode.get());
+                optNode.get().getParent().getChildren().remove(optNode.get().getUci());
                 chessNodeRepo.deleteById(id);
             } else {
                 throw new IllegalArgumentException("Can't delete root node of opening.");
@@ -77,10 +77,6 @@ public class OpeningService {
         } else {
             throw new BadIdException();
         }
-    }
-
-    public Optional<ChessNode> findNodeById(Long id) {
-        return chessNodeRepo.findById(id);
     }
 
 }

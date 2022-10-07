@@ -17,4 +17,6 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=poltypoltou
     ports:
       - "10001:80"
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
     restart: always

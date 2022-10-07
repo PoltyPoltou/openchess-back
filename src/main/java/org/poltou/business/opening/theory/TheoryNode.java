@@ -1,10 +1,8 @@
-package org.poltou.opening;
+package org.poltou.business.opening.theory;
 
-import java.util.Map;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,26 +11,29 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import org.poltou.convertors.BoardConvertor;
+import org.poltou.business.convertors.BoardConvertor;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import chess.format.Forsyth;
-import scala.Function1;
-import scala.collection.JavaConverters;
-import scala.jdk.CollectionConverters;
 import chess.Color;
 import chess.Move;
 import chess.Pos;
 import chess.Situation;
+import chess.format.Forsyth;
+import scala.Function1;
+import scala.collection.JavaConverters;
+import scala.jdk.CollectionConverters;
 
 @Entity
-public class ChessNode {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class TheoryNode {
     @Id
     @JsonProperty
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -44,21 +45,21 @@ public class ChessNode {
     private Situation situation;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChessNode> children;
+    private Map<String, TheoryNode> children;
 
     @ManyToOne
     @JsonIgnore
-    private ChessNode parent;
+    private TheoryNode parent;
 
-    private String san = "root";
-    private String uci = "";
-
-    public ChessNode() {
-        this.children = new LinkedList<>();
-    }
+    private String san;
+    private String uci;
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUci() {
@@ -69,12 +70,12 @@ public class ChessNode {
         this.uci = uci;
     }
 
-    public void setSan(String san) {
-        this.san = san;
-    }
-
     public String getSan() {
         return san;
+    }
+
+    public void setSan(String san) {
+        this.san = san;
     }
 
     public Situation getSituation() {
@@ -85,19 +86,19 @@ public class ChessNode {
         this.situation = situation;
     }
 
-    public Collection<ChessNode> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<ChessNode> children) {
+    public void setChildren(Map<String, TheoryNode> children) {
         this.children = children;
     }
 
-    public ChessNode getParent() {
+    public Map<String, TheoryNode> getChildren() {
+        return children;
+    }
+
+    public TheoryNode getParent() {
         return parent;
     }
 
-    public void setParent(ChessNode parent) {
+    public void setParent(TheoryNode parent) {
         this.parent = parent;
     }
 

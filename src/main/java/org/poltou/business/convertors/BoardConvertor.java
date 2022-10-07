@@ -1,4 +1,4 @@
-package org.poltou.convertors;
+package org.poltou.business.convertors;
 
 import javax.persistence.AttributeConverter;
 
