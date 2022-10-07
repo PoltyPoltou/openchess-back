@@ -1,5 +1,6 @@
 package org.poltou.business.opening.theory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class TheoryNode {
     private Situation situation;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Map<String, TheoryNode> children;
 
     @ManyToOne
@@ -115,6 +117,11 @@ public class TheoryNode {
     @JsonGetter(value = "color")
     public String getTurn() {
         return situation.color().equals(Color.White$.MODULE$) ? "white" : "black";
+    }
+
+    @JsonGetter(value = "children")
+    public Collection<TheoryNode> getChildrenList(){
+        return this.children.values();
     }
 
     @JsonGetter(value = "moves")
