@@ -1,9 +1,9 @@
 package org.poltou.business.opening.theory;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -120,8 +120,9 @@ public class TheoryNode {
     }
 
     @JsonGetter(value = "children")
-    public Collection<TheoryNode> getChildrenList(){
-        return this.children.values();
+    public List<TheoryNode> getChildrenList() {
+        return this.children.values().stream().sorted((n1, n2) -> n1.getSan().compareTo(n2.getSan()))
+                .collect(Collectors.toList());
     }
 
     @JsonGetter(value = "moves")
