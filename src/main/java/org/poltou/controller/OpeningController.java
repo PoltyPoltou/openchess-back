@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.poltou.business.dto.opening.theory.TheoryNodeDTO;
 import org.poltou.business.dto.opening.theory.TheoryOpeningDTO;
-import org.poltou.controller.datainterface.ChessNodeDataInterface;
+import org.poltou.controller.datainterface.NodeDataInterface;
 import org.poltou.controller.datainterface.OpeningDataInterface;
 import org.poltou.exceptions.BadIdException;
 import org.poltou.service.OpeningService;
@@ -45,7 +45,7 @@ public class OpeningController {
     }
 
     @PostMapping("/chessnode/{id}")
-    public Long addNode(@PathVariable Long id, @RequestBody ChessNodeDataInterface node) {
+    public Long addNode(@PathVariable Long id, @RequestBody NodeDataInterface node) {
         return openingService.addNodeToOpening(id, node.getUci());
     }
 

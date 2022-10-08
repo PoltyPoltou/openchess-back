@@ -26,7 +26,7 @@ public class OpeningService {
     @Autowired
     private TheoryNodeDataService theoryNodeDataService;
 
-    public List<TheoryOpening> getAllOpenings() { 
+    public List<TheoryOpening> getAllOpenings() {
         return StreamSupport.stream(openingRepo.findAll().spliterator(), false).collect(Collectors.toList());
     }
 

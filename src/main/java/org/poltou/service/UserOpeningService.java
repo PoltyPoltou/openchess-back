@@ -1,6 +1,9 @@
 package org.poltou.service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.poltou.business.UserResult;
 import org.poltou.business.opening.user.UserNode;
@@ -38,14 +41,15 @@ public class UserOpeningService {
     @Autowired
     UserNodeDataService userNodeDataService;
 
-    public void importChessCom(String username, String color) {
-        UserOpening opening = getOrCreateOpening(username, color);
-        // opening != null
+    public void importChessCom(String username) {
+        UserOpening whiteOpen = getOrCreateOpening(username, "white");
+        UserOpening blackOpen = getOrCreateOpening(username, "black");
         List<ParsedPgn> pgnFromPlayer = chesscomService.getPgnFromPlayer(2021, 1, username);
         for (ParsedPgn pgn : pgnFromPlayer) {
-            addUserGameToOpening(opening, pgn);
+            addUserGameToOpening(whiteOpen, blackOpen, pgn);
         }
-
+        userOpeningRepo.save(whiteOpen);
+        userOpeningRepo.save(blackOpen);
     }
 
     private UserOpening getOrCreateOpening(String username, String color) {
@@ -58,31 +62,60 @@ public class UserOpeningService {
         return opening;
     }
 
-    private void addUserGameToOpening(UserOpening opening, ParsedPgn pgn) {
-        String username = opening.getUsername();
+    /**
+     * Will add the game to the corresponding opening
+     * depending of which color the user played in the pgn <br>
+     * Openings should share the same username
+     */
+    private void addUserGameToOpening(UserOpening whiteOpen, UserOpening blackOpen, ParsedPgn pgn) {
+        String username = whiteOpen.getUsername();
         Tuple3<InitialPosition, Tags, Sans> tuple;
         tuple = ParsedPgn.unapply(pgn).get();
         Tags tags = tuple._2();
+        // check if the game has an end
         Option<Option<Color>> resultColor = tags.resultColor();
         if (resultColor.nonEmpty()) {
+            UserOpening opening = null;
             Color played = null;
-            if (tags.apply("White").equals(Option.apply(username))) {
+
+            // fetching which side is playing the user and assign variables accordingly
+            if (tags.apply("white").exists(player -> username.equalsIgnoreCase(username))) {
                 // user is playing as white
                 played = Color.White$.MODULE$;
-            } else if (tags.apply("Black").equals(Option.apply(username))) {
+                opening = whiteOpen;
+            } else if (tags.apply("black").exists(player -> username.equalsIgnoreCase(username))) {
                 // user is playing as black
                 played = Color.Black$.MODULE$;
+                opening = blackOpen;
             } else {
-                logger.warn("one pgn loaded does not contain username " + username);
+                logger.warn("Pgn loaded does not contain username " + username);
                 return;
             }
             UserResult result = UserResult.parseTag(played, resultColor.get());
+
+            // Adding the UserNode of the game to the correct opening
             UserNode nodeIter = opening.getStartingNode();
             Reader.fullWithSans(pgn, id -> id).valid().toOption().get().chronoMoves()
-                    .foldLeft(nodeIter, (UserNode iter, Either<chess.Move, chess.Drop> dropOrMove) -> {
-                        String uci = dropOrMove.fold(mv -> mv.toUci().uci(), drop -> drop.toUci().uci());
-                        return userNodeDataService.getOrCreateChildNode(iter, uci, result);
-                    });
+                    .foldLeft(nodeIter,
+                            (UserNode iter, Either<chess.Move, chess.Drop> dropOrMove) -> {
+                                String uci = dropOrMove.fold(mv -> mv.toUci().uci(), drop -> drop.toUci().uci());
+                                return userNodeDataService.getOrCreateChildNode(iter, uci, result);
+                            });
         }
+    }
+
+    public List<UserOpening> getAllOpenings() {
+        return StreamSupport.stream(userOpeningRepo.findAll().spliterator(), false).collect(Collectors.toList());
+    }
+
+    public Optional<UserOpening> findOpeningById(Long id) {
+        return userOpeningRepo.findById(id);
+    }
+
+    public Optional<UserNode> findNodeById(Long id) {
+        return userNodeRepo.findById(id);
+    }
+
+    public void deleteOpening(Long id) {
     }
 }
