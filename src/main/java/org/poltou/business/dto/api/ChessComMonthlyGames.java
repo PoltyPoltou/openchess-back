@@ -1,4 +1,4 @@
-package org.poltou.business.apiDTO;
+package org.poltou.business.dto.api;
 
 import java.util.List;
 

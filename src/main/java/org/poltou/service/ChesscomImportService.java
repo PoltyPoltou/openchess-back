@@ -3,8 +3,8 @@ package org.poltou.service;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.poltou.business.apiDTO.ChessComGame;
-import org.poltou.business.apiDTO.ChessComMonthlyGames;
+import org.poltou.business.dto.api.ChessComGame;
+import org.poltou.business.dto.api.ChessComMonthlyGames;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;

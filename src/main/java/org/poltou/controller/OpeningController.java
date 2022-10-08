@@ -1,9 +1,10 @@
 package org.poltou.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.poltou.business.opening.theory.TheoryNode;
-import org.poltou.business.opening.theory.TheoryOpening;
+import org.poltou.business.dto.opening.theory.TheoryNodeDTO;
+import org.poltou.business.dto.opening.theory.TheoryOpeningDTO;
 import org.poltou.controller.datainterface.ChessNodeDataInterface;
 import org.poltou.controller.datainterface.OpeningDataInterface;
 import org.poltou.exceptions.BadIdException;
@@ -22,18 +23,20 @@ public class OpeningController {
     private OpeningService openingService;
 
     @GetMapping("/opening")
-    public List<TheoryOpening> getAllOpening() {
-        return openingService.getAllOpenings();
+    public List<TheoryOpeningDTO> getAllOpening() {
+        return openingService.getAllOpenings().stream().map(TheoryOpeningDTO::new).collect(Collectors.toList());
     }
 
     @GetMapping("/opening/{id}")
-    public TheoryOpening getOpeningById(@PathVariable Long id) {
-        return openingService.findOpeningById(id).orElseThrow(() -> new BadIdException(id.toString()));
+    public TheoryOpeningDTO getOpeningById(@PathVariable Long id) {
+        return new TheoryOpeningDTO(
+                openingService.findOpeningById(id).orElseThrow(() -> new BadIdException(id.toString())));
     }
 
     @GetMapping("/chessnode/{id}")
-    public TheoryNode getNodeById(@PathVariable Long id) {
-        return openingService.findNodeById(id).orElseThrow(() -> new BadIdException(id.toString()));
+    public TheoryNodeDTO getNodeById(@PathVariable Long id) {
+        return new TheoryNodeDTO(
+                openingService.findNodeById(id).orElseThrow(() -> new BadIdException(id.toString())));
     }
 
     @PostMapping("/opening")

@@ -51,7 +51,8 @@ public class UserOpeningService {
     private UserOpening getOrCreateOpening(String username, String color) {
         UserOpening opening = userOpeningRepo.findByUsernameAndColor(username, color);
         if (opening == null) {
-            UserChessNode node = userNodeDataService.createNode(new Situation(Board.init(Variant.orDefault("standard")), Color.White$.MODULE$));
+            UserChessNode node = userNodeDataService
+                    .createNode(new Situation(Board.init(Variant.orDefault("standard")), Color.White$.MODULE$));
             opening = UserOpening.of(username, color, node);
         }
         return opening;
@@ -83,10 +84,5 @@ public class UserOpeningService {
                         return userNodeDataService.getOrCreateChildNode(iter, uci, result);
                     });
         }
-    }
-
-    private void addChildToParent(UserChessNode parent, UserChessNode childNode) {
-        parent.getChildren().put(childNode.getUci(), childNode);
-        childNode.setParent(parent);
     }
 }

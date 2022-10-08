@@ -23,10 +23,9 @@ public class TheoryOpening {
     @JsonProperty
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    private String name;
     @OneToOne(cascade = CascadeType.ALL)
     private TheoryNode startingNode;
+    private String name;
 
     public String getName() {
         return name;
@@ -48,9 +47,8 @@ public class TheoryOpening {
         return id;
     }
 
-    @JsonProperty
-    public String getColor() {
-        return startingNode.getTurn();
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }
