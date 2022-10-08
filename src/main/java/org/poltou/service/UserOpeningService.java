@@ -3,7 +3,7 @@ package org.poltou.service;
 import java.util.List;
 
 import org.poltou.business.UserResult;
-import org.poltou.business.opening.user.UserChessNode;
+import org.poltou.business.opening.user.UserNode;
 import org.poltou.business.opening.user.UserOpening;
 import org.poltou.business.repository.UserNodeRepo;
 import org.poltou.business.repository.UserOpeningRepo;
@@ -51,7 +51,7 @@ public class UserOpeningService {
     private UserOpening getOrCreateOpening(String username, String color) {
         UserOpening opening = userOpeningRepo.findByUsernameAndColor(username, color);
         if (opening == null) {
-            UserChessNode node = userNodeDataService
+            UserNode node = userNodeDataService
                     .createNode(new Situation(Board.init(Variant.orDefault("standard")), Color.White$.MODULE$));
             opening = UserOpening.of(username, color, node);
         }
@@ -77,9 +77,9 @@ public class UserOpeningService {
                 return;
             }
             UserResult result = UserResult.parseTag(played, resultColor.get());
-            UserChessNode nodeIter = opening.getStartingNode();
+            UserNode nodeIter = opening.getStartingNode();
             Reader.fullWithSans(pgn, id -> id).valid().toOption().get().chronoMoves()
-                    .foldLeft(nodeIter, (UserChessNode iter, Either<chess.Move, chess.Drop> dropOrMove) -> {
+                    .foldLeft(nodeIter, (UserNode iter, Either<chess.Move, chess.Drop> dropOrMove) -> {
                         String uci = dropOrMove.fold(mv -> mv.toUci().uci(), drop -> drop.toUci().uci());
                         return userNodeDataService.getOrCreateChildNode(iter, uci, result);
                     });

@@ -4,10 +4,8 @@ import javax.persistence.Entity;
 
 import org.poltou.business.opening.theory.TheoryNode;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-
 @Entity
-public class UserChessNode extends TheoryNode {
+public class UserNode extends TheoryNode {
 
     private int encounters;
     private int wins;
@@ -37,7 +35,6 @@ public class UserChessNode extends TheoryNode {
         this.losses = losses;
     }
 
-    @JsonGetter
     public int getDraws() {
         return this.encounters - this.wins - this.losses;
     }

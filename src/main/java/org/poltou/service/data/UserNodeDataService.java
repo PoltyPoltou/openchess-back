@@ -2,7 +2,7 @@ package org.poltou.service.data;
 
 import org.poltou.business.UserResult;
 import org.poltou.business.opening.theory.TheoryNode;
-import org.poltou.business.opening.user.UserChessNode;
+import org.poltou.business.opening.user.UserNode;
 import org.springframework.stereotype.Service;
 
 import chess.Situation;
@@ -12,29 +12,29 @@ public class UserNodeDataService extends TheoryNodeDataService {
 
     @Override
     protected TheoryNode provideNode() {
-        return new UserChessNode();
+        return new UserNode();
     }
 
-    private void setupNode(UserChessNode node) {
+    private void setupNode(UserNode node) {
         node.setEncounters(0);
         node.setWins(0);
         node.setLosses(0);
     }
 
-    public UserChessNode createNode(Situation situation) {
-        UserChessNode node = (UserChessNode) super.createNode(situation);
+    public UserNode createNode(Situation situation) {
+        UserNode node = (UserNode) super.createNode(situation);
         setupNode(node);
         return node;
     }
 
-    public UserChessNode createNode(Situation situation, UserChessNode parent, String san, String uci) {
-        UserChessNode node = (UserChessNode) super.createNode(situation, parent, san, uci);
+    public UserNode createNode(Situation situation, UserNode parent, String san, String uci) {
+        UserNode node = (UserNode) super.createNode(situation, parent, san, uci);
         setupNode(node);
         return node;
     }
 
-    public UserChessNode getOrCreateChildNode(UserChessNode parent, String uci, UserResult result) {
-        UserChessNode foundNode = (UserChessNode) super.getOrCreateChildNode(parent, uci);
+    public UserNode getOrCreateChildNode(UserNode parent, String uci, UserResult result) {
+        UserNode foundNode = (UserNode) super.getOrCreateChildNode(parent, uci);
         foundNode.setEncounters(foundNode.getEncounters() + 1);
         switch (result) {
             case WIN:

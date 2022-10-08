@@ -7,12 +7,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 @Entity
 public class UserOpening {
 
-    public static UserOpening of(String username, String color, UserChessNode startingNode) {
+    public static UserOpening of(String username, String color, UserNode startingNode) {
         UserOpening userOpening = new UserOpening();
         userOpening.setUsername(username);
         userOpening.setColor(color);
@@ -21,14 +19,13 @@ public class UserOpening {
     }
 
     @Id
-    @JsonProperty
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String username;
     private String color;
 
     @OneToOne(cascade = CascadeType.ALL)
-    private UserChessNode startingNode;
+    private UserNode startingNode;
 
     public Long getId() {
         return id;
@@ -42,7 +39,7 @@ public class UserOpening {
         return color;
     }
 
-    public UserChessNode getStartingNode() {
+    public UserNode getStartingNode() {
         return startingNode;
     }
 
@@ -58,7 +55,7 @@ public class UserOpening {
         this.color = color;
     }
 
-    public void setStartingNode(UserChessNode startingNode) {
+    public void setStartingNode(UserNode startingNode) {
         this.startingNode = startingNode;
     }
 

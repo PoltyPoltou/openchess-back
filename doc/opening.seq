@@ -1,0 +1,19 @@
+@startuml openingControllerSeq
+actor user
+participant OpeningController
+participant OpeningService
+participant OpeningRepository
+participant NodeRepository
+participant OpeningRepository
+
+user -> OpeningController : AddOpening(name, fen)
+OpeningController -> OpeningService : CreateOpening(name, fen)
+OpeningService -> OpeningService : convert fen to Situation
+OpeningService -> OpeningService : node = CreateNode(Situation)
+OpeningService -> NodeRepository : save(node)
+return node
+OpeningService -> OpeningService : opening = CreateOpening(node)
+OpeningController <-- OpeningService : opening.id
+user <-- OpeningController : id
+@enduml
+
