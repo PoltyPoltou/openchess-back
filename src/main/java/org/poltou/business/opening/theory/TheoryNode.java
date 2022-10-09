@@ -1,5 +1,7 @@
 package org.poltou.business.opening.theory;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
@@ -14,6 +16,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.UpdateTimestamp;
 import org.poltou.business.convertors.BoardConvertor;
 
 import chess.Color;
@@ -34,6 +37,12 @@ public class TheoryNode {
     private TheoryNode parent;
     private String san;
     private String uci;
+    @UpdateTimestamp
+    private Instant updatedate;
+
+    public Instant getUpdatedate() {
+        return updatedate;
+    }
 
     public Long getId() {
         return id;

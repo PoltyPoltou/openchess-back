@@ -1,11 +1,15 @@
 package org.poltou.business.opening.user;
 
+import java.time.Instant;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class UserOpening {
@@ -26,6 +30,12 @@ public class UserOpening {
 
     @OneToOne(cascade = CascadeType.ALL)
     private UserNode startingNode;
+    @UpdateTimestamp
+    private Instant updatedate;
+
+    public Instant getUpdatedate() {
+        return updatedate;
+    }
 
     public Long getId() {
         return id;
