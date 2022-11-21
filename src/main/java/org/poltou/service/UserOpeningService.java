@@ -118,4 +118,8 @@ public class UserOpeningService {
 
     public void deleteOpening(Long id) {
     }
+
+    public UserOpening findByUsernameAndColor(String username, String color) {
+        return userOpeningRepo.findByUsernameAndColor(username, color);
+    }
 }
